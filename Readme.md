@@ -281,7 +281,7 @@ A polished dashboard with:
 
 # 🙌 Author
 
-Built by **Manoj Prathapa**, combining **Data Engineering, Web Scraping,
-ML Pipelines, LLM Architecture, DevOps**, and **Visualization
-Engineering**
+Built by Manoj Prathapa, combining Data Engineering, Web Scraping,
+ML Pipelines, LLM Architecture, DevOps, and Visualization
+Engineering.
 ------------------------------------------------------------------------
