@@ -265,6 +265,13 @@ A polished dashboard with:
 -   Deterministic formatting\
 -   Clean + consistent JSON schema
 
+### Screen Shots:
+
+<img width="1906" height="1136" alt="Screenshot 2025-11-25 012750" src="https://github.com/user-attachments/assets/1e700c81-5c1b-43c0-88ee-940b29c7efb2" />
+<img width="621" height="972" alt="Screenshot 2025-11-25 012804" src="https://github.com/user-attachments/assets/73de8140-99a2-4eee-900e-6d7ab96472a4" />
+<img width="1917" height="1057" alt="Screenshot 2025-11-25 012852" src="https://github.com/user-attachments/assets/9ac8dc43-a230-4c8d-a319-425618bea0d9" />
+<img width="1905" height="1037" alt="Screenshot 2025-11-25 012905" src="https://github.com/user-attachments/assets/ef22c85b-c00c-4b9f-b6e0-a7f5d53ebd12" />
+
 ------------------------------------------------------------------------
 
 # 🔮 Future Improvements
