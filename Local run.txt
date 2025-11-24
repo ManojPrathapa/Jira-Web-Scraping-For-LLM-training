@@ -1,0 +1,29 @@
+# In vector_db.py change the __init__ to this to make it run locally.
+
+
+# When running locally without Docker:
+
+def __init__(self):
+        print("📂 Using Local Vector Storage (No Docker)")
+        self.client = QdrantClient(path="./qdrant_data_local") 
+        
+        self.collection_name = Config.COLLECTION_NAME
+        self._ensure_collection()
+
+
+
+# When running with Docker code change:
+
+def __init__(self):
+        self.client = QdrantClient(host=Config.QDRANT_HOST, port=Config.QDRANT_PORT)
+        self.collection_name = Config.COLLECTION_NAME
+        self._ensure_collection()
+
+# Steps to run with Docker:
+Open Docker Desktop on your computer and make sure the engine is running.
+Open your terminal in the project folder (where docker-compose.yml is).
+Run this command:
+    docker-compose up -d
+Wait 10 seconds for it to start.
+Run your pipeline again:
+    python -m src.pipeline
