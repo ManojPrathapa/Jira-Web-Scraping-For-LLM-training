@@ -1,22 +1,287 @@
-🧠 CogniOps: Enterprise Jira Intelligence PlatformCogniOps is an end-to-end AI Data Engineering Platform that transforms raw Jira ticketing data into a semantic knowledge base.Unlike traditional ETL pipelines that simply move text from A to B, CogniOps implements a RAG (Retrieval-Augmented Generation) architecture. It ingests thousands of tickets, generates 384-dimensional vector embeddings, and enables semantic search (e.g., finding "database bottlenecks" even if the word "database" is never mentioned).🏗 High-Level ArchitectureThe system follows a modern ELT (Extract, Load, Transform) pattern optimized for AI readiness.graph LR
-    A[Jira Cloud API] -->|Async Fetch & Retry| B(Ingestion Service)
-    B -->|Validation| C{Pydantic Guardrails}
-    C -->|Fail| D[Dead Letter Queue]
-    C -->|Pass| E[Data Lake .jsonl]
-    E -->|Instruction Tuning| F[LLM Fine-Tuning Set]
-    E -->|all-MiniLM-L6-v2| G[Embedding Engine]
-    G -->|Vectors| H[(Qdrant Vector DB)]
-    H -->|Semantic Search| I[Streamlit Dashboard]
-🚀 Key Features (The "Senior Engineer" Flex)1. 🛡️ Data Governance & QualityStrict Contracts: Uses Pydantic V2 to enforce schema validation. Malformed data is rejected at the gate, ensuring the Data Lake remains pristine.Resilience Patterns: Implements Exponential Backoff strategies (using tenacity) to handle Jira API rate limits (429) and network jitters gracefully.2. 🤖 AI-Native PipelineVector Embeddings: Automatically converts issue summaries and descriptions into vectors using sentence-transformers.Hybrid Storage: - Hot Storage: Qdrant Vector DB for real-time semantic search.Cold Storage: JSONL Data Lake for archival and audit trails.LLM Readiness: Automatically generates a fine_tuning_dataset.jsonl formatted for OpenAI/Llama 3 instruction tuning, turning raw logs into training data.3. ⚡ High-Performance EngineeringAsynchronous Core: Built on asyncio and aiohttp to handle high-concurrency fetching without blocking the main thread.Infrastructure-as-Code: Fully containerized vector database using Docker, with an automatic fallback to "Local Disk Mode" if Docker is unavailable.🛠️ Setup & InstallationPrerequisitesPython 3.9+Docker Desktop (Optional, for Production Mode)1. Clone & Installgit clone [https://github.com/yourusername/cogniops.git](https://github.com/yourusername/cogniops.git)
-cd cogniops
-python -m venv venv
-# Windows
-.\venv\Scripts\activate
-# Mac/Linux
-source venv/bin/activate
+# 🚀 Apache Jira Scraper + LLM Training Pipeline + Streamlit Dashboard
 
-pip install -r requirements.txt
-2. ConfigurationCreate a .env file or modify src/config.py.Mock Mode: Set USE_MOCK_DATA = True to generate realistic synthetic engineering data (recommended for demos).Real Mode: Set USE_MOCK_DATA = False and provide Jira API Credentials.3. Infrastructure (Vector DB)Spin up the Qdrant instance:docker-compose up -d
-(Note: If Docker is not running, the system automatically degrades to Local Memory Mode to ensure the code never crashes.)💻 UsageStep 1: Run the ETL PipelineThis script triggers the Async Ingestion -> Transformation -> Vector Loading workflow.python -m src.pipeline
-Output: You will see a Rich CLI progress bar tracking the ingestion and embedding generation.Step 2: Launch the Mission Control DashboardStart the React-style Streamlit interface.streamlit run dashboard.py
-Access the dashboard at http://localhost:8501.🧠 Engineering Insights (Q&A)Q: Why use Qdrant over pgvector or Pinecone?A: Qdrant is written in Rust and offers superior performance for high-throughput filtering. Unlike Pinecone, it can be run locally via Docker, allowing for a completely air-gapped development environment which is crucial for enterprise security.Q: Why save to JSONL before the Vector DB?A: This follows the "Lakehouse" architecture pattern. The JSONL file serves as the immutable "Raw Zone." If we decide to change our Embedding Model (e.g., upgrade from MiniLM to OpenAI Ada-002), we can re-process the raw JSONL without hitting the slow Jira API again.Q: How does the Search work?A: It uses Cosine Similarity. The user's query is converted into a vector in real-time. The database then calculates the angle between the query vector and every document vector, returning results that are conceptually close, not just keyword matches.🔮 Future Roadmap[ ] Airflow DAG: Orchestrate the pipeline to run hourly.[ ] Hybrid Search: Combine BM25 (Keyword) with Vector Search for higher accuracy on specific ticket IDs.[ ] GenAI Summarization: Connect the retrieval output to GPT-4 to generate "Weekly Status Reports" automatically.Built with ❤️ by [Your Name] for the Data Engineering Community.
+### **Enterprise-Grade Data Engineering + ML Pipeline**
+
+This repository showcases a **real-world production-grade pipeline**
+that extracts data from **Apache's public Jira**, cleans & transforms it
+into **LLM‑ready JSONL datasets**, and visualizes insights using a
+**beautiful Streamlit dashboard with AI-powered analytics**.
+
+Perfect for demonstrating **Data Engineering + AI/ML + MLOps** skills.
+
+------------------------------------------------------------------------
+
+# 🌟 Key Highlights
+
+### ✔ Real Apache Jira Web Scraping
+
+-   Issues, comments, metadata, timestamps\
+-   Pagination, retries, resume state\
+-   Handles 429, 5xx, malformed data
+
+### ✔ LLM Data Transformation
+
+-   Clean natural text\
+-   Summaries, Q/A, classifications\
+-   JSONL format used for LLM training
+
+### ✔ Streamlit + LLM Dashboard
+
+-   Semantic search\
+-   Topic clustering\
+-   Issue analytics visualizations\
+-   Chat with Jira dataset\
+-   Embedding visualizer
+
+### LLM-Powered Semantic Search & Analytics (OpenAI-Integrated)
+
+ - Integrates OpenAI GPT models for semantic search, natural-language querying, and intelligent issue understanding.
+ - Converts Jira issues into dense vector embeddings for high-precision similarity search and context retrieval.
+ - Supports AI-driven summaries, root-cause extraction, pattern detection, and domain-aware insights.
+ - Enables users to ask natural questions like “What are the top recurring failures in HDFS?” and get analysis-grade answers.
+ - Combines data engineering + vector search + LLM reasoning into a streamlined production-style pipeline.
+ - Embedded inside the Streamlit dashboard for real-time, interactive AI analytics over large Jira datasets.
+
+### ✔ Production-Ready Engineering
+
+-   CI/CD pipeline\
+-   Complete test suite\
+-   Modular & extensible architecture\
+-   Docker support
+
+------------------------------------------------------------------------
+
+# 📁 Project Structure
+
+    Jira-Web-Scraping-For-LLM-training/
+    ├── .github/
+    │   └── workflows/
+    │       └── ci.yml
+    ├── data/
+    │   ├── raw/
+    │   ├── processed/
+    │   └── samples/
+    │       └── HADOOP_sample.jsonl
+    ├── docs/
+    │   └── architecture.md
+    ├── notebooks/
+    │   └── quick_demo.py
+    ├── src/
+    │   ├── __init__.py
+    │   ├── config.py
+    │   ├── jira_scraper.py
+    │   ├── transform.py
+    │   ├── utils.py
+    │   └── cli.py
+    ├── streamlit_app/
+    │   ├── dashboard.py
+    │   └── llm_utils.py
+    ├── tests/
+    │   ├── test_transform.py
+    │   └── test_scraper.py
+    ├── Dockerfile
+    ├── docker-compose.yml
+    ├── requirements.txt
+    ├── .gitignore
+    └── README.md
+
+------------------------------------------------------------------------
+
+# 🧠 Architecture Overview
+
+                 ┌────────────────────────────┐
+                 │      Apache Jira API        │
+                 └──────────────┬─────────────┘
+                                │ (JSON REST)
+                   ┌────────────▼──────────────┐
+                   │       Scraper Layer       │
+                   │ (Rate limits, retries,    │
+                   │  pagination, resume state)│
+                   └────────────┬──────────────┘
+                                │
+          ┌─────────────────────▼────────────────────┐
+          │               Raw Storage                 │
+          │        data/raw/{PROJECT}.jsonl          │
+          └─────────────────────┬────────────────────┘
+                                │
+                    ┌───────────▼────────────┐
+                    │    Transformation       │
+                    │  (clean text, enrich,   │
+                    │   LLM tasks, JSONL)     │
+                    └───────────┬────────────┘
+                                │
+                 ┌──────────────▼────────────────────┐
+                 │         Processed Storage          │
+                 │   data/processed/{PROJECT}.jsonl   │
+                 └──────────────┬────────────────────┘
+                                │
+                     ┌──────────▼──────────┐
+                     │  Streamlit Dashboard │
+                     │ (LLM Q/A, insights)  │
+                     └──────────────────────┘
+
+------------------------------------------------------------------------
+
+# ⚙️ Setup Instructions
+
+## **1️⃣ Clone the repo**
+
+    git clone https://github.com/ManojPrathapa/Jira-Web-Scraping-For-LLM-training.git
+    cd Jira-Web-Scraping-For-LLM-training
+
+## **2️⃣ Create virtual environment**
+
+    python -m venv venv
+    source venv/bin/activate      # Linux/macOS
+    venv\Scripts\activate         # Windows
+
+## **3️⃣ Install dependencies**
+
+    pip install -r requirements.txt
+
+## **4️⃣ Run the scraper**
+
+(default projects: `HADOOP SPARK KAFKA`)
+
+    python -m src.cli --mode scrape
+
+## **5️⃣ Run the transformer**
+
+    python -m src.cli --mode transform
+
+## **6️⃣ Start the Streamlit dashboard**
+
+    streamlit run streamlit_app_fast.py
+
+------------------------------------------------------------------------
+
+# 🧩 Detailed Design Reasoning
+
+## **1. Scraper Layer (Fault-Tolerant + Resume Support)**
+
+### 💥 Handles failure scenarios:
+
+-   API rate limits\
+-   HTTP 429 & 5xx responses\
+-   Missing fields in Jira response\
+-   Empty/malformed issues\
+-   Pagination edge cases\
+-   Interrupted runs with resume state
+
+### 🧠 Techniques:
+
+-   Stateless & stateful mixed architecture\
+-   Retry-on-failure with exponential backoff\
+-   Request session pooling\
+-   Local checkpointing
+
+------------------------------------------------------------------------
+
+## **2. Transformation Layer**
+
+Ensures **clean, consistent, LLM-ready** text.
+
+### Includes:
+
+-   HTML → Markdown → Plain text cleanup\
+-   Issue + comment thread merging\
+-   Metadata normalization\
+-   Derived datasets:
+    -   Summaries\
+    -   Classifications\
+    -   Q&A pairs\
+    -   Topic tags
+
+All exported in **JSONL**, compatible with: - OpenAI fine‑tuning\
+- Anthropic Claude\
+- HuggingFace LLaMA\
+- Google Gemini
+
+------------------------------------------------------------------------
+
+## **3. Streamlit Dashboard**
+
+A polished dashboard with:
+
+### 📊 Analytics:
+
+-   Issue volumes & trends\
+-   Status & priority distribution\
+-   Label frequency heatmaps\
+-   User activity patterns\
+-   Word clouds
+
+### 🤖 AI Features:
+
+-   Semantic search\
+-   LLM-based Q&A\
+-   Chatbot trained on Jira issues\
+-   Embedding visualizer (UMAP/TSNE)\
+-   Cluster explorer
+
+------------------------------------------------------------------------
+
+# 🐞 Edge Cases Handled
+
+### Scraper
+
+-   Empty "fields" section\
+-   Null assignee/reporter\
+-   HTML with broken tags\
+-   Unicode issues\
+-   Comments missing timestamps\
+-   API pagination breaks mid-page\
+-   Interrupted write → safely recoverable
+
+### Transformer
+
+-   Missing description field\
+-   Overlapping HTML entities\
+-   Multiline descriptions\
+-   Comments with code blocks\
+-   Emojis & unicode normalization\
+-   Unexpected schema changes
+
+------------------------------------------------------------------------
+
+# 🚀 Optimizations
+
+### Performance:
+
+-   Future-ready concurrency design\
+-   Cached HTTP session\
+-   Streamed writes to `.jsonl` files\
+-   Minimal repeated parsing overhead
+
+### Reliability:
+
+-   Local checkpointing\
+-   Graceful crash recovery\
+-   Full logging & instrumentation
+
+### LLM Data Quality:
+
+-   Aggressive noise filtering\
+-   Deterministic formatting\
+-   Clean + consistent JSON schema
+
+------------------------------------------------------------------------
+
+# 🔮 Future Improvements
+
+-   Multi-threaded or async scraping\
+-   Distributed scraping with Ray\
+-   Embeddings stored in vector DBs\
+-   Pinecone / Weaviate integration\
+-   Auto QC scoring of generated tasks\
+-   Model fine‑tuning notebook\
+-   Add multi-agent summarization pipeline
+
+------------------------------------------------------------------------
+
+# 🙌 Author
+
+Built by **Manoj Prathapa**, combining **Data Engineering, Web Scraping,
+ML Pipelines, LLM Architecture, DevOps**, and **Visualization
+Engineering**
+------------------------------------------------------------------------

@@ -1,16 +1,10 @@
 version: '3.8'
-
 services:
-  qdrant:
-    image: qdrant/qdrant:latest
-    container_name: jira_vector_db
-    ports:
-      - "6333:6333"
+  pipeline:
+    build: .
+    command: ["--mode","scrape"]
     volumes:
-      - ./qdrant_data:/qdrant/storage
+      - ./:/app
+      - ./data:/app/data
     environment:
-      - QDRANT__SERVICE__GRPC_PORT=6334
-    restart: always
-
-  # Optional: If you wanted to run Prometheus later, it would go here.
-  # For now, we are keeping the stack lean but powerful.
+      - PYTHONUNBUFFERED=1

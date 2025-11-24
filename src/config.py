@@ -1,24 +1,16 @@
-import os
-from dotenv import load_dotenv
+"""Configuration and toggles for the pipeline."""
+from typing import List
 
-load_dotenv()
+USE_MOCK_DATA = False  # Set True to use existing mock data in repo
+JIRA_PROJECTS: List[str] = ["HADOOP", "SPARK", "HIVE"]
 
-class Config:
-    # JIRA CONFIGURATION
-    JIRA_BASE_URL = os.getenv("JIRA_BASE_URL", "https://your-domain.atlassian.net")
-    JIRA_USERNAME = os.getenv("JIRA_USERNAME", "user@example.com")
-    JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN", "your-api-token")
-    JIRA_PROJECT_KEY = os.getenv("JIRA_PROJECT_KEY", "KAN")
-    
-    # VECTOR DB
-    QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
-    QDRANT_PORT = int(os.getenv("QDRANT_PORT", 6333))
-    COLLECTION_NAME = "jira_issues_v2"
-    
-    # AI & ML
-    EMBEDDING_MODEL = "all-MiniLM-L6-v2"
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "") # Optional: For real LLM generation
-    
-    # FLAGS
-    USE_MOCK_DATA = os.getenv("USE_MOCK_DATA", "True").lower() == "true"
-    MOCK_COUNT =  2000  # Generated 2000 issues for a dense dashboard
+DATA_RAW_DIR = "data/raw"
+DATA_PROCESSED_DIR = "data/processed"
+STATE_DIR = "state"
+
+# Scraper tuning
+MAX_RESULTS = 200
+CONCURRENT_REQUESTS = 8
+
+# User agent
+USER_AGENT = "Manoj-Jira-Scraper/1.0 (+https://github.com/ManojPrathapa)"
